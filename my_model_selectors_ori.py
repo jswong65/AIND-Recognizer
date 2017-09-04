@@ -63,6 +63,7 @@ class SelectorConstant(ModelSelector):
 
 class SelectorBIC(ModelSelector):
     """ select the model with the lowest Baysian Information Criterion(BIC) score
+
     http://www2.imm.dtu.dk/courses/02433/doc/ch6_slides.pdf
     Bayesian information criteria: BIC = -2 * logL + p * logN
     """
@@ -124,14 +125,12 @@ class SelectorDIC(ModelSelector):
             try:
                 log_x_i = model.score(self.X, self.lengths)
                 log_x_all = 0
-                # Calculate SUM(log(P(X(all but i))
+                # Calculate SUM(log(P(X(all))
                 for key, val in self.hwords.items():
-                    if key == self.this_word:
-                        pass
                     X, lengths = val
                     log_x_all += model.score(X, lengths)
                 # Calculate the DIC    
-                DIC = log_x_i - float(log_x_all) / (len(self.hwords.keys()) - 1)
+                DIC = log_x_i - float(log_x_all - log_x_i) / (len(self.hwords.keys()) - 1)
                 # Store the current best score and model.
                 if DIC > best_DIC:
                         best_DIC = DIC
